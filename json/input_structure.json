@@ -1,0 +1,29 @@
+{
+     "groups" : [{
+               "id" : "top2012",
+               "label" : "Top 20 Games from 2012"
+          },
+          {
+               "id" : "contentLabels",
+               "label" : "Content Labels"
+          }
+     ],
+     "items" : [{
+               "id" : "id0",
+               "label" : "...",
+               "group" : "top2012",
+               "tag" : ["sometag", "anothertag"]
+     }, {
+               "id" : "id1",
+               "label" : "...",
+               "group" : "contentLabels",
+               "tags" : ["athirdtag"]
+          }
+     ],
+     "links" : [{
+               "from" : "id0",
+               "to" : "id1",
+               "value" : 0.0
+          }
+     ]
+}
