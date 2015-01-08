@@ -7,7 +7,7 @@ The Directive is located in js/view.js.
 
 to get started use: ```<d3cluster-Directive customid=""></d3cluster-Directive>```
 
-*Note: customid is optional - if input is undefined, it will create it's own in the directive (isolated scope)* 
+*Note: customid is optional - if input is undefined, it will create it's own in the directive (isolated scope in cooperation with two way data binding will be available soon)* 
 
 The repo contains a whole AngularJS example. You only have to start it on a (local) Webserver
 
