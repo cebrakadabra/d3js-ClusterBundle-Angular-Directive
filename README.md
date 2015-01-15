@@ -12,4 +12,4 @@ to get started use: ```<d3cluster-Directive customid=""></d3cluster-Directive>``
 The repo contains a whole AngularJS example. You only have to start it on a (local) Webserver
 
 ## Tasks todo
-- two way data binding (mapping a dynamic input structure (json) to the directive)
+- Redraw the svg visualization - it won't work with the current data structure
