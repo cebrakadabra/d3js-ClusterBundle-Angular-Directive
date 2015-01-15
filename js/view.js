@@ -1,8 +1,11 @@
-d3app.directive('d3clusterDirective', function() {
+d3app.directive('d3clusterDirective', function($parse) {
     return {
       restrict: 'E',
       scope: {
-	      id: '@customid'
+	      id: '@customid',
+	      groups: '@',
+	      items: '@',
+	      links: '@'
 	    },
       	link: function postLink(scope, element, attrs) {
 
@@ -134,6 +137,25 @@ d3app.directive('d3clusterDirective', function() {
 			/* this is the function we can change for our tasks */
 			function processData(data){
 
+				
+				/* my input */
+				var groups = [];
+	      		var items = [];
+	      		var links = []; 
+
+	      		groups = $parse(scope.groups)(scope);
+	      		items = $parse(scope.items)(scope);
+	      		links = $parse(scope.links)(scope);
+	      		/* my input end */
+
+	      		for(var i = 0; i < groups.length; i++){
+	      			// var groups[i].id = {
+	      			// 	name: groups[i].label,
+	      			// 	children: []
+	      			// }
+
+	      			console.log(groups[i].id);
+	      		}
 				// console.log(data);
 
 				// this can be a group
@@ -165,6 +187,7 @@ d3app.directive('d3clusterDirective', function() {
 					topicNodes = []
 				
 
+				// this are the items	
 				for(var d = 0; d < totalGames; d++){
 
 					games[ data[d]['name'] ] = {
