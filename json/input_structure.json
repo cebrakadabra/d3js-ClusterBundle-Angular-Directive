@@ -6,24 +6,66 @@
           {
                "id" : "contentLabels",
                "label" : "Content Labels"
+          },
+          {
+               "id" : "top2014",
+               "label" : "Top 20 Games from 2014"
           }
+
      ],
-     "items" : [{
+     "items" : [
+          {
                "id" : "id0",
-               "label" : "...",
+               "label" : "Game from 2012",
                "group" : "top2012",
                "tag" : ["sometag", "anothertag"]
-     }, {
+          }, 
+          {
                "id" : "id1",
-               "label" : "...",
+               "label" : "content label 1",
                "group" : "contentLabels",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id2",
+               "label" : "Game from 2014",
+               "group" : "top2014",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id3",
+               "label" : "content label 2",
+               "group" : "contentLabels",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id4",
+               "label" : "Another Game from 2014",
+               "group" : "top2014",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id5",
+               "label" : "Another Game from 2012",
+               "group" : "top2012",
                "tags" : ["athirdtag"]
           }
      ],
-     "links" : [{
+     "links" : [
+          {
                "from" : "id0",
                "to" : "id1",
-               "value" : 0.0
+               "value" : 3.0
+          },
+          {
+               "from" : "id2",
+               "to" : "id3",
+               "value" : 5.0
+          },
+          {
+               "from" : "id5",
+               "to" : "id0",
+               "value" : 5.0
           }
      ]
 }
