@@ -58,6 +58,11 @@
                "value" : 3.0
           },
           {
+               "from" : "id0",
+               "to" : "id3",
+               "value" : 3.0
+          },
+          {
                "from" : "id2",
                "to" : "id3",
                "value" : 5.0

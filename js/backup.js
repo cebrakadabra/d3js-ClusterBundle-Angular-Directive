@@ -5,7 +5,8 @@ d3app.directive('d3clusterDirective', function($parse) {
 	      id: '@customid',
 	      groups: '@',
 	      items: '@',
-	      links: '@'
+	      links: '@',
+	      groupcolorsgiven: '@'
 	    },
       	link: function postLink(scope, element, attrs) {
 
@@ -16,9 +17,39 @@ d3app.directive('d3clusterDirective', function($parse) {
 	      	} else{
 	      		clusteridentifier = "clusterid";
 	      	}
-	      	// console.log(clusteridentifier);
 	      	
 	      	element.append("<div id="+clusteridentifier+"></div>");
+
+	      	var groups = [];
+      		var items = [];
+      		var links = []; 
+      		groups = $parse(scope.groups)(scope);
+      		items = $parse(scope.items)(scope);
+      		links = $parse(scope.links)(scope);
+
+      		var groupcolors = null;
+      		var grouptypes = ["group1", "group2", "group3", "group4", "group5", "group6", "group6", "group7", "group8"];
+
+      		console.log(scope.groupcolorsgiven);
+      		if(scope.groupcolorsgiven != "" && scope.groupcolorsgiven != undefined){
+      			var colorgroup = $parse(scope.groupcolorsgiven)(scope);
+      			console.log(colorgroup);
+      			for(var y = 0; y < colorgroup.length; y++){
+      				var isOk  = /^#[0-9A-F]{6}$/i.test(colorgroup[y]);
+      				if(isOk){
+      					groupcolors = colorgroup;
+      				} else{
+      					alert("ATTENTION\n\nA given color seems not to be in hexcode. \n\nConvention: 6digits and hexcode only. \nDefault color is used now.")
+      					// console.log("A color seems to be not hex.");
+      					groupcolors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
+      				}
+      			}
+      			
+      		} else{
+      			groupcolors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
+      		}
+      		
+
 
 	        var map = {
 				 "name": "",
@@ -86,7 +117,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 				maxGameWeapons = 0,
 				maxGameSales = 0, 
 				minGameSales = undefined,
-				totalGames = 50;
+				totalGames = items.length;
 			var gradientCounter = 0,
 				gameRatings = {},
 				gameRatingTypes = {}
@@ -98,35 +129,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 			var giaVidPlayer;
 
-			// function initVideo(){
-				
-			// 	$.template(
-			// 		'giaVideoEmbedTemplate',
-			// 		'<video id="gia-vid-player" class="video-js vjs-default-skin" controls preload="true" width="${width}" height="${height}" poster="${posterUrl}" data-setup="{}">\
-			// 			<source src="${mp4Url}" type="video/mp4">\
-			// 			<source src="${ogvUrl}" type="video/ogg">\
-			// 			<object id="flash_fallback_1" class="vjs-flash-fallback" width="${width}" height="${height}" type="application/x-shockwave-flash" data="/js/video-js/video-js.swf"> \
-			// 				<param name="movie" value="/js/video-js/video-js.swf" /> \
-			// 				<param name="allowfullscreen" value="true" /> \
-			// 				<param name="flashvars" value="config={"playlist":["${posterUrl}", {"url": "${mp4Url}","autoPlay":false,"auto Buffering":true}]}" /> \
-			// 			</object>\
-			// 		</video>'
-			// 	);
-				
-			// 	//write player to page
-			// 	$( "#intro-video" ).empty()
-			// 	$.tmpl( 'giaVideoEmbedTemplate', {
-			// 		width: 460,
-			// 		height: 258,
-			// 		posterUrl: 'video/video_game_poster.jpg',
-			// 		mp4Url: 'video/GUNS_VIDEO_GAME.mp4',
-			// 		ogvUrl: 'video/GUNS_VIDEO_GAME.ogv'		
-			// 	} ).appendTo( "#intro-video" );
-				
-			// 	giaVidPlayer = _V_("gia-vid-player");
-
-			// }
-
+			
 
 
 			// ****************************
@@ -135,513 +138,383 @@ d3app.directive('d3clusterDirective', function($parse) {
 			/* This function gets the Data from Tabletops.js */
 			/* it is an callback from line 54 */
 			/* this is the function we can change for our tasks */
-			function processData(data){
+			function processData(){
 
-				
 				/* my input */
-				var groups = [];
-	      		var items = [];
-	      		var links = []; 
+				
 
-	      		groups = $parse(scope.groups)(scope);
-	      		items = $parse(scope.items)(scope);
-	      		links = $parse(scope.links)(scope);
+	      		var data = [];
+
+
 	      		/* my input end */
 
-	      		for(var i = 0; i < groups.length; i++){
-	      			// var groups[i].id = {
-	      			// 	name: groups[i].label,
-	      			// 	children: []
-	      			// }
+	      		for(var i = 0; i < items.length; i++){
+	      			
+	      			data.push({"contentdescripters":"", "description":"", "name":items[i].label, "rating":"m", "rowNumber": i, "sales": "20661268", "weapons": ""}); 
+	      			
+	      			for(var x = 0; x < links.length; x++){
 
-	      			console.log(groups[i].id);
+	      				if(links[x].from == items[i].id){
+	      					var to = links[x].to;
+	      					to = to.substr(2, to.length);
+	      					to = parseInt(to);
+
+	      					data[i].contentdescripters += items[to].label;
+	      				}
+	      				
+	      			}
+	      			
+
+	      			
 	      		}
 				// // console.log(data);
 
-				// // this can be a group
-				// // children representing the items
-				// var gameRootNode = {
-				// 	name: 'games',
-				// 	children: []
-				// }
+				// this can be a group
+				// children representing the items
+				var gameRootNode = {
+					name: 'games',
+					children: []
+				}
 
-				// // this can be a group
-				// // children representing the items
-				// var weaponRootNode = {
-				// 	name: 'games',
-				// 	children: []
-				// }
+				// this can be a group
+				// children representing the items
+				var weaponRootNode = {
+					name: 'games',
+					children: []
+				}
 
-				// //this can be a group
-				// // children representing the items
-				// var contentRootNode = {
-				// 	name: 'games',
-				// 	children: []
-				// }
+				//this can be a group
+				// children representing the items
+				var contentRootNode = {
+					name: 'games',
+					children: []
+				}
 
-				// var games = {},
-				// 	weapons = {},
-				// 	topics = {},
-				// 	gameNodes = [],
-				// 	weaponNodes = [],
-				// 	topicNodes = []
+				var customRootNode = {
+					name: 'games2',
+					children: []
+				}
+
+				// Create a similiar datastructure, as already used and push it into the map object
+				// That could have the benefit, that we don't have to change the drawChart() function, only the parser (processData)
 				
 
-				// // this are the items	
-				// for(var d = 0; d < totalGames; d++){
 
-				// 	games[ data[d]['name'] ] = {
-				// 		name: data[d]['name'],
-				// 		className: getClassName(data[d]['name']),
-				// 		children: [],
-				// 		size: Number(data[d]['sales']),
-				// 		numWeapons: 0,
-				// 		weapons: [],
-				// 		topics: [],
-				// 		numTopics: 0,
-				// 		nodeType: 'game',
-				// 		connectedNodes: [],
-				// 		gameRating: data[d]['rating'],
-				// 		violenceLink: '',
-				// 		weaponLink: '',
-				// 		ratingLink: data[d]['rating'],
-				// 		weaponConnections:{'guns': [], 'noguns': []},
-				// 		topicConnections: {'violence': [], 'noviolence': []}
-				// 	}
-					
-					
-				// 	if(gameRatings.hasOwnProperty(data[d]['rating'])){
-				// 		gameRatings[data[d]['rating']]['total'] ++
-				// 		gameRatings[data[d]['rating']]['data'].push(games[ data[d]['name'] ])
-				// 	} else {
-				// 		gameRatings[data[d]['rating']] = {
-				// 			name: data[d]['rating'],
-				// 			total: 1,
-				// 			data: [ games[ data[d]['name'] ] ]
-				// 		}
-				// 	}
-					
-					
-					
-					
-				// 	if( minGameSales == undefined){
-				// 		minGameSales = games[ data[d]['name'] ]['size']
-				// 	} else if( minGameSales > games[ data[d]['name'] ]['size'] ){
-				// 		minGameSales = games[ data[d]['name'] ]['size']
-				// 	}
-					
-				// 	if( games[ data[d]['name'] ]['size'] > maxGameSales ){
-				// 		maxGameSales = games[ data[d]['name'] ]['size']
-				// 	}
-					
-					
-				// 	var weaponTags = ( data[d]['weapons'] != '') ? data[d]['weapons'].split(', '): [];
-				// 	var contentTags = ( data[d]['contentdescripters'] != '' ) ? data[d]['contentdescripters'].split(', '): [];	
-					
-					
-				// 	if( weaponTags.length > 0){
-				// 		var includeGameWeapon = false
-				// 		games[ data[d]['name'] ]['numWeapons'] = weaponTags.length;
-				// 		weaponTags.forEach(function(w){
 
-				// 			if( !weapons[ w ] ){
-				// 				weapons[w] = {
-				// 					name: w,
-				// 					className: getClassName(w),
-				// 					children: [],
-				// 					size: 0,
-				// 					numGames: 0,
-				// 					games: [],
-				// 					nodeType: 'weapon',
-				// 					connectedNodes: [],
-				// 					barLinks : {},
-				// 					weaponLink: ''						
-				// 				}
-				// 			}
 
-				// 			gwlinks.push({
-				// 				type: 'game-weapon-link',
-				// 				source: games[ data[d]['name'] ],
-				// 				target: weapons[w]
-				// 			})
-				// 			weapons[w]['size'] ++;
-				// 			weapons[w]['numGames'] ++;
-							
-				// 			weapons[w]['connectedNodes'].push(games[ data[d]['name'] ]['className']);
-				// 			weapons[w]['games'].push(games[ data[d]['name'] ]['name']);
-				// 			games[ data[d]['name'] ]['connectedNodes'].push(weapons[w]['className']);
-				// 			games[ data[d]['name'] ]['weapons'].push(weapons[w]['name']);
-							
-				// 			if(w!= 'axe' && w!= 'dagger or tomahawk' && w!= 'hammer' && w!= 'sword' && w!= 'short blade'  && w!= 'bow and arrow'  && w!= 'grenade or explosive'  && w!= 'launcher' ){
-				// 				includeGameWeapon = true
-				// 				weapons[w]['weaponLink'] = weapons[w]['barLinks']['guns'] = 'guns'
-				// 				games[ data[d]['name'] ]['weaponConnections']['guns'].push(weapons[w])
-				// 			} else {
-				// 				weapons[w]['weaponLink'] = weapons[w]['barLinks']['noguns'] = 'noguns'
-				// 				games[ data[d]['name'] ]['weaponConnections']['noguns'].push(weapons[w])
-				// 			}
-							
-							
-				// 		})
+
+
 				
-				// 		if(includeGameWeapon){
-				// 			gamesWithGuns.push(games[ data[d]['name'] ])
-				// 			games[ data[d]['name'] ]['weaponLink'] = 'guns'
+
+				var games = {},
+					weapons = {},
+					topics = {},
+					gameNodes = [],
+					weaponNodes = [],
+					topicNodes = []
 				
-				// 		} else {
-				// 			gamesWithoutGuns.push(games[ data[d]['name'] ])
-				// 			games[ data[d]['name'] ]['weaponLink']  = 'noguns'
-				// 		}
+
+				// this are the items	
+				for(var d = 0; d < totalGames; d++){
+					games[ data[d]['name'] ] = {
+						name: data[d]['name'],
+						className: getClassName(data[d]['name']),
+						children: [],
+						size: Number(data[d]['sales']),
+						numWeapons: 0,
+						weapons: [],
+						topics: [],
+						numTopics: 0,
+						nodeType: 'game',
+						connectedNodes: [],
+						gameRating: data[d]['rating'],
+						violenceLink: '',
+						weaponLink: '',
+						ratingLink: data[d]['rating'],
+						weaponConnections:{'guns': [], 'noguns': []},
+						topicConnections: {'violence': [], 'noviolence': []}
+					}
+
+
+
+
+					// games[ "Game from 2012" ]['contentlabel1']
+
+
+
+
+					if(gameRatings.hasOwnProperty(data[d]['rating'])){
+						gameRatings[data[d]['rating']]['total'] ++
+						gameRatings[data[d]['rating']]['data'].push(games[ data[d]['name'] ])
+					} else {
+						gameRatings[data[d]['rating']] = {
+							name: data[d]['rating'],
+							total: 1,
+							data: [ games[ data[d]['name'] ] ]
+						}
+					}
+					
+					
+					
+					
+					if( minGameSales == undefined){
+						minGameSales = games[ data[d]['name'] ]['size']
+					} else if( minGameSales > games[ data[d]['name'] ]['size'] ){
+						minGameSales = games[ data[d]['name'] ]['size']
+					}
+					
+					if( games[ data[d]['name'] ]['size'] > maxGameSales ){
+						maxGameSales = games[ data[d]['name'] ]['size']
+					}
+					
+					
+					var weaponTags = ( data[d]['weapons'] != '') ? data[d]['weapons'].split(', '): [];
+					var contentTags = ( data[d]['contentdescripters'] != '' ) ? data[d]['contentdescripters'].split(', '): [];	
+					
+					
+					if( weaponTags.length > 0){
+						var includeGameWeapon = false
+						games[ data[d]['name'] ]['numWeapons'] = weaponTags.length;
+						weaponTags.forEach(function(w){
+
+							if( !weapons[ w ] ){
+								weapons[w] = {
+									name: w,
+									className: getClassName(w),
+									children: [],
+									size: 0,
+									numGames: 0,
+									games: [],
+									nodeType: 'weapon',
+									connectedNodes: [],
+									barLinks : {},
+									weaponLink: ''						
+								}
+							}
+
+							gwlinks.push({
+								type: 'game-weapon-link',
+								source: games[ data[d]['name'] ],
+								target: weapons[w]
+							})
+							weapons[w]['size'] ++;
+							weapons[w]['numGames'] ++;
+							
+							weapons[w]['connectedNodes'].push(games[ data[d]['name'] ]['className']);
+							weapons[w]['games'].push(games[ data[d]['name'] ]['name']);
+							games[ data[d]['name'] ]['connectedNodes'].push(weapons[w]['className']);
+							games[ data[d]['name'] ]['weapons'].push(weapons[w]['name']);
+							
+							if(w!= 'axe' && w!= 'dagger or tomahawk' && w!= 'hammer' && w!= 'sword' && w!= 'short blade'  && w!= 'bow and arrow'  && w!= 'grenade or explosive'  && w!= 'launcher' ){
+								includeGameWeapon = true
+								weapons[w]['weaponLink'] = weapons[w]['barLinks']['guns'] = 'guns'
+								games[ data[d]['name'] ]['weaponConnections']['guns'].push(weapons[w])
+							} else {
+								weapons[w]['weaponLink'] = weapons[w]['barLinks']['noguns'] = 'noguns'
+								games[ data[d]['name'] ]['weaponConnections']['noguns'].push(weapons[w])
+							}
+							
+							
+						})
+				
+						if(includeGameWeapon){
+							gamesWithGuns.push(games[ data[d]['name'] ])
+							games[ data[d]['name'] ]['weaponLink'] = 'guns'
+				
+						} else {
+							gamesWithoutGuns.push(games[ data[d]['name'] ])
+							games[ data[d]['name'] ]['weaponLink']  = 'noguns'
+						}
 						
 						
 						
-				// 	} else {
-				// 		gamesWithoutGuns.push(games[ data[d]['name'] ])
-				// 		games[ data[d]['name'] ]['weaponLink']  = 'noguns'
-				// 	}
+					} else {
+						gamesWithoutGuns.push(games[ data[d]['name'] ])
+						games[ data[d]['name'] ]['weaponLink']  = 'noguns'
+					}
 					
-				// 	if( contentTags.length > 0){
-				// 		var includeGameContent = false
+					if( contentTags.length > 0){
+						var includeGameContent = false
 						
-				// 		games[ data[d]['name'] ]['numTopics'] = weaponTags.length;
-				// 		contentTags.forEach(function(t){
+						games[ data[d]['name'] ]['numTopics'] = weaponTags.length;
+						contentTags.forEach(function(t){
 							
-				// 			if( !topics[ t ] ){
-				// 				topics[t] = {
-				// 					name: t,
-				// 					className: getClassName(t),
-				// 					children: [],
-				// 					size: 0,
-				// 					numGames: 0,
-				// 					games: [],
-				// 					nodeType: 'topic',
-				// 					connectedNodes: [],
-				// 					barLinks: {},
-				// 					violenceLink: ''
-				// 				}
-				// 			}
+							if( !topics[ t ] ){
+								topics[t] = {
+									name: t,
+									className: getClassName(t),
+									children: [],
+									size: 0,
+									numGames: 0,
+									games: [],
+									nodeType: 'topic',
+									connectedNodes: [],
+									barLinks: {},
+									violenceLink: ''
+								}
+							}
 
-				// 			gtlinks.push({
-				// 				type: 'game-topic-link',
-				// 				source: games[ data[d]['name'] ],
-				// 				target: topics[t]
-				// 			})
-				// 			topics[t]['size'] ++;
-				// 			topics[t]['numGames'] ++;
+							gtlinks.push({
+								type: 'game-topic-link',
+								source: games[ data[d]['name'] ],
+								target: topics[t]
+							})
+							topics[t]['size'] ++;
+							topics[t]['numGames'] ++;
 							
-				// 			topics[t]['connectedNodes'].push(games[ data[d]['name'] ]['className']);
-				// 			topics[t]['games'].push(games[ data[d]['name'] ]['name']);
-				// 			games[ data[d]['name'] ]['connectedNodes'].push(topics[t]['className']);		
-				// 			games[ data[d]['name'] ]['topics'].push(topics[t]['name']);
+							topics[t]['connectedNodes'].push(games[ data[d]['name'] ]['className']);
+							topics[t]['games'].push(games[ data[d]['name'] ]['name']);
+							games[ data[d]['name'] ]['connectedNodes'].push(topics[t]['className']);		
+							games[ data[d]['name'] ]['topics'].push(topics[t]['name']);
 							
-				// 			if(t == 'Intense Violence' || t == 'Blood and Gore' || t == 'Violence' || t == 'Blood' || t == 'Cartoon Violence'  ){
-				// 				includeGameContent = true;
-				// 				topics[t]['violenceLink'] = topics[t]['barLinks']['violence'] = 'violence'
-				// 				games[ data[d]['name'] ]['topicConnections']['violence'].push(topics[t])
-				// 			} else {
-				// 				topics[t]['violenceLink'] = topics[t]['barLinks']['violence'] = 'noviolence'
-				// 				games[ data[d]['name'] ]['topicConnections']['noviolence'].push(topics[t])
-				// 			}
+							if(t == 'Intense Violence' || t == 'Blood and Gore' || t == 'Violence' || t == 'Blood' || t == 'Cartoon Violence'  ){
+								includeGameContent = true;
+								topics[t]['violenceLink'] = topics[t]['barLinks']['violence'] = 'violence'
+								games[ data[d]['name'] ]['topicConnections']['violence'].push(topics[t])
+							} else {
+								topics[t]['violenceLink'] = topics[t]['barLinks']['violence'] = 'noviolence'
+								games[ data[d]['name'] ]['topicConnections']['noviolence'].push(topics[t])
+							}
 							
-				// 		})
-				// 		if(includeGameContent){
-				// 			gamesWithViolence.push(games[ data[d]['name'] ])
-				// 			games[ data[d]['name'] ]['violenceLink'] = 'violence'
+						})
+						if(includeGameContent){
+							gamesWithViolence.push(games[ data[d]['name'] ])
+							games[ data[d]['name'] ]['violenceLink'] = 'violence'
 							
-				// 		} else {
-				// 			gamesWithoutViolence.push(games[ data[d]['name'] ])
-				// 			games[ data[d]['name'] ]['violenceLink'] = 'noviolence'
-				// 		}
+						} else {
+							gamesWithoutViolence.push(games[ data[d]['name'] ])
+							games[ data[d]['name'] ]['violenceLink'] = 'noviolence'
+						}
 						
-				// 	} else {
-				// 		games[ data[d]['name'] ]['violenceLink'] = 'noviolence'
-				// 	}
+					} else {
+						games[ data[d]['name'] ]['violenceLink'] = 'noviolence'
+					}
 
 					
 					
-				// }
+				}
 
-				// for(var g in games){
-				// 	gameRootNode.children.push(games[g])
-				// 	if(games[g]['numTopics'] > maxGamesToTopics){
-				// 		maxGamesToTopics = games[g]['numTopics'];
-				// 	}
-				// 	if(games[g]['numWeapons'] > maxGamesToWeapons){
-				// 		maxGamesToWeapons = games[g]['numWeapons'];
-				// 	}
+
+				var customgames = {};
+				customgames[ "Game from 2015" ] = {
+						name: "Game from 2015",
+						className: "gamefrom2015",
+						children: [],
+						size: Number(1234),
+						numWeapons: 0,
+						weapons: ["contentlabel1", "contentlabel2"],
+						topics: ["contentlabel1", "contentlabel2"],
+						numTopics: 0,
+						nodeType: 'game',
+						connectedNodes: games[ "Game from 2012" ]['contentlabel1'],
+						gameRating: "m",
+						violenceLink: '',
+						weaponLink: '',
+						ratingLink: 'm',
+						weaponConnections:{'guns': [], 'noguns': []},
+						topicConnections: {'violence': [], 'noviolence': []}
+					}
+
+
+
+				for(var g in games){
+					gameRootNode.children.push(games[g])
+					if(games[g]['numTopics'] > maxGamesToTopics){
+						maxGamesToTopics = games[g]['numTopics'];
+					}
+					if(games[g]['numWeapons'] > maxGamesToWeapons){
+						maxGamesToWeapons = games[g]['numWeapons'];
+					}
 					
-				// }
-				// for(var w in weapons){
-				// 	weaponRootNode.children.push(weapons[w])
-				// 	if(weapons[w]['numGames'] > maxWeaponsToGames){
-				// 		maxWeaponsToGames = weapons[w]['numGames'];
-				// 	}
-				// }
-				// for(var t in topics){
-				// 	contentRootNode.children.push(topics[t])
-				// 	if(topics[t]['numGames'] > maxTopicsToGames){
-				// 		maxTopicsToGames = topics[t]['numGames'];
-				// 	}
-				// }
+				}
+				for(var w in weapons){
+					weaponRootNode.children.push(weapons[w])
+					if(weapons[w]['numGames'] > maxWeaponsToGames){
+						maxWeaponsToGames = weapons[w]['numGames'];
+					}
+				}
+				for(var t in topics){
+					contentRootNode.children.push(topics[t])
+					if(topics[t]['numGames'] > maxTopicsToGames){
+						maxTopicsToGames = topics[t]['numGames'];
+					}
+				}
+
+				for(var x in customgames){
+					customRootNode.children.push(customgames[x]);
+				}
+
+
+
+
 				
-				// maxGameWeapons = maxGamesToWeapons
-				// if( maxWeaponsToGames > maxGamesToWeapons){
-				// 	maxGameWeapons = maxWeaponsToGames;
-				// }
-				// maxGameTopics = maxGamesToTopics
-				// if( maxTopicsToGames > maxGameTopics){
-				// 	maxGameTopics = maxTopicsToGames;
-				// }
+				maxGameWeapons = maxGamesToWeapons
+				if( maxWeaponsToGames > maxGamesToWeapons){
+					maxGameWeapons = maxWeaponsToGames;
+				}
+				maxGameTopics = maxGamesToTopics
+				if( maxTopicsToGames > maxGameTopics){
+					maxGameTopics = maxTopicsToGames;
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 					
-				// map.children.push(gameRootNode);
-				// map.children.push(weaponRootNode);
-				// map.children.push(contentRootNode);
+				map.children.push(gameRootNode);
+				map.children.push(weaponRootNode);
+				map.children.push(contentRootNode);
+
+				map.children.push(customRootNode);
+				console.log(gameRootNode);
+				console.log(customRootNode);
+				console.log(games);
 
 				
+
+
+
+
+
 				drawChart();
 				
-				// var ratingArray = []
-				// for(var k in gameRatings){
-				// 	gameRatings[k].contentType = 'rating'
-				// 	//ratingArray.push(gameRatings[k])
-				// }
-				
-				// ratingArray[0] = gameRatings ['m']
-				// ratingArray[1] = gameRatings ['t']
-				// ratingArray[2] = gameRatings ['e10']
-				// ratingArray[3] = gameRatings ['e']
-				
-				
-				// drawSmallChart('chart-game-ratings', ratingArray, 'left', 120);
-				
-				// var gameGunsArray = [
-				// 	{
-				// 		name: 'Guns',
-				// 		total: gamesWithGuns.length,
-				// 		contentType: 'guns',
-				// 		data: gamesWithGuns
-				// 	},
-				// 	{
-				// 		name: 'No guns',
-				// 		total: totalGames - gamesWithGuns.length,
-				// 		contentType: 'guns',
-				// 		data: gamesWithoutGuns
-				// 	},
-				
-				// ]
-				// drawSmallChart('chart-game-weapons', gameGunsArray, 'left', 60);
-				
-				// var gameViolenceArray = [
-				// 	{
-				// 		name: 'Violence',
-				// 		total: gamesWithViolence.length,
-				// 		contentType: 'violence',
-				// 		data: gamesWithViolence
-				// 	},
-				// 	{
-				// 		name: 'No violence',
-				// 		total: totalGames - gamesWithViolence.length,
-				// 		contentType: 'violence',
-				// 		data: gamesWithoutViolence
-				// 	},
-				
-				// ]
-				// drawSmallChart('chart-game-violence', gameViolenceArray, 'left', 60);
 
-				// $('.gia-button').click(function(e){
-					
-					
 
-				// 	if($(this).hasClass('gia-button-selected') == false){	
-				// 		currentSelectionText = $(this).text();
-				// 		$(this).text('Show all games')	
-				// 		currentSelectionBtn = this;
-									
-				// 		if($(this).attr('id') == 'btn-guns'){
-				// 			showBarConnections( gameGunsArray['0'])
-				// 		} else if($(this).attr('id') == 'btn-violence'){
-				// 			showBarConnections( gameViolenceArray['0'])
-				// 		} else if($(this).attr('id') == 'btn-audience'){
-				// 			showBarConnections( ratingArray[0])
-				// 		}
-						
-						
-						
-				// 	} else {
-				// 		hideBarConnections(currentSelection )
-				// 	}
-					
-					
-					
-				// })
+
+
+
+
+				var ratingArray = []
+				for(var k in gameRatings){
+					gameRatings[k].contentType = 'rating'
+					//ratingArray.push(gameRatings[k])
+				}
+				
+				ratingArray[0] = gameRatings ['m']
+				ratingArray[1] = gameRatings ['t']
+				ratingArray[2] = gameRatings ['e10']
+				ratingArray[3] = gameRatings ['e']
+				
+				
+
 
 
 				
 			}
-
-			var smallVis = {}
-
-			// ****************************
-			// 		MAKE CHANGES HERE
-			// ****************************
-			/* Maybe put this in a own directive to be more flexible */
-			/* just an idea */
-			// function drawSmallChart(location, data, align, height){
-			        
-			//         // var h = height,
-			//         //         w = 200,
-			//         //         barH = 25;
-			        
-			//         // var startX = 0
-			//         // var startY = 1
-
-			        
-			        
-			//         // smallVis [data[0]['contentType']] = vis = d3.select("#" + location).append('svg')
-			//         //         .attr({
-			//         //                 'height': h + 'px',
-			//         //                 'width': w + 'px'
-			//         //         })
-			        
-			//         // w = 150
-			        
-
-			//         var bars = vis.selectAll(".bar")  
-			//                 .data(data)
-			//                 .enter()
-			//                         .append('g')
-			//                         .attr('class', 'bar-group')
-			//                         .attr('id', function(d){
-			//                                 return 'bargroup-' + d.name.toLowerCase().replace(' ', '')
-			//                         })
-			                        
-			//                         bars.append('rect')
-			//                         .attr("x", function(d,i){
-			//                                 if(align == 'right'){
-			//                                         return w -barW(d.total) -30  //+ barX(data,i)
-			//                                 } else {
-			//                                         return startX +30 //+ barX(data,i)
-			//                                 }
-			//                         })
-			//                         .attr("y", function (d,i){
-			                        
-			//                                 return startY + (barH + 1) * i 
-			//                         })
-			//                         .attr("width", function(d){
-			//                                 return barW(d.total)
-			//                         })
-			//                         .attr("height", barH)
-			//                         .attr('id', function(d){
-			//                                 return 'bar-' + d.name.toLowerCase().replace(' ', '')
-			//                         })
-			//                         .attr('class', 'bar')
-			//                         .style('fill', function(d){
-			                                
-			//                                 if(d.contentType == 'rating'){
-			//                                         return '#5265AE'
-			//                                 } else if(d.contentType == 'guns'){
-			//                                         return '#CC2F27'
-			//                                 } else if(d.contentType == 'violence'){
-			//                                         return '#5E843A'
-			//                                 }
-			                        
-			                                
-			//                         })
-			//                     .on("mouseover", function(d){
-											
-			//                                 $('.gia-button').removeClass('gia-button-selected')
-			//                                 $(currentSelectionBtn).text(currentSelectionText)
-			//                                 currentSelectionText = ''
-			//                                 currentSelectionBtn = undefined;
-			//                                 showBarConnections(d)
-			//                         })
-			//                 .on("mouseout", hideBarConnections)
-			                        
-			//                         bars.append('text')
-			//                         .attr("class",'bar-label')
-			//                         .attr("y", function(d,i){
-			//                                 var yPos = startY + ((barH + 1) * i) + 16 
-			//                                 return yPos;
-			//                         })
-			//                         .attr("x", function(d,i){
-			//                                         if(align == 'right'){
-			//                                                 return w - barW(d.total) -35
-			//                                         } else {
-			//                                                 return barW(d.total) +35
-			//                                         }
-			//                         })
-			//                         .attr("text-anchor",function(d){
-			//                                 if(align == 'right'){
-			//                                         return 'end'
-			//                                 } else {
-			//                                         return 'start'
-			//                                 }
-
-			//                         })
-			//                         .text(function(d) { 
-			//                                 var text = '';
-
-			//                                 if(d.contentType == 'rating'){
-			                                        
-			//                                         if(d.name == 'e'){
-			//                                                 text = 'Everyone (E)'
-			//                                         } else if(d.name == 'e10'){
-			//                                                 text = 'Ages 10+ (E10)'
-			//                                         } else if(d.name == 't'){
-			//                                                 text = 'Ages 13+ (T)'
-			//                                         } else if(d.name == 'm'){
-			//                                                 text = 'Ages 17+ (M)'
-			//                                         }
-			//                                 } else if(d.contentType == 'guns' || d.contentType == 'violence'){
-			//                                         text = d.name
-			//                                 }
-			//                                 return text; 
-			                        
-			//                         });
-			                        
-
-
-			//                         bars.append('text')
-			//                         .attr("class",'bar-label-pct')
-			//                         .attr("y", function(d,i){
-			//                                 var yPos = startY + ((barH + 1) * i) + 16                            
-			//                                 return yPos;
-			//                         })
-			//                         .attr("x", function(d,i){
-			//                                         if(align == 'right'){
-			//                                                 return w 
-			//                                         } else {
-			//                                                 return startX
-			//                                         }
-			//                         })
-			//                         .attr("text-anchor",function(d){
-			//                                 if(align == 'right'){
-			//                                         return 'end'
-			//                                 } else {
-			//                                         return 'start'
-			//                                 }
-
-			//                         })
-			//                         .text(function(d) { 
-			//                                 var text = Math.round(d.total/totalGames * 100).toFixed(0) + '%'
-			//                                 return text; 
-			                        
-			//                         });
-			                        
-									
-
-
-			//                 function barX (data, pos){
-			//                         var xPos = startX + barW(data[pos].total) + 5
-			                        
-			//                         return xPos
-			//                 }
-
-			//                 function barW(v){
-			//                         return v/totalGames * w;
-			                        
-			//                 }
-			// }
 
 
 
@@ -671,7 +544,14 @@ d3app.directive('d3clusterDirective', function($parse) {
 					    				.range([0,50]);
 				
 				
-				var nodes = cluster.nodes(map)
+				/* The map object into the cluster */ 
+				var nodes = cluster.nodes(map);
+				console.log(map);
+
+
+
+
+
 
 				svg.selectAll(".node-dot")
 			      .data(nodes.filter(function(n) { return n.depth == 2; }))
@@ -736,7 +616,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 						}	
 
 						return bClass;
-			      })
+			      }) // ****** Random color usage ****
 				  .style('fill', function(d){
 				  			if(d.nodeType == 'game'){
 								return '#394B9F'
@@ -744,11 +624,56 @@ d3app.directive('d3clusterDirective', function($parse) {
 								return '#CC2F27'
 							} else if( d.nodeType == 'topic'){
 								return '#3C602E'
+							}	else if( d.nodeType == 'game2'){
+								return '#ff0000'
 							}
 				
 				  	   })
 			      .on("mouseover", showConnections)
 			      .on("mouseout", hideConnections)
+
+
+
+
+
+
+
+
+
+
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+			      // ****************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 				$('.node').mousemove(setPopupPosition);
 				$('.node-dot').mousemove(setPopupPosition);
@@ -776,6 +701,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 					.attr("class", function(d){
 						var linkClass = 'links link-' + d[4]['className'] + ' link-' + d[0]['className']
 						var node = (d[4]['nodeType'] == 'game')? d[4] : d[0];
+						console.log(d[4]);
 						
 						var gLink = (d[4]['nodeType'] == 'game')? d[4] : d[0];
 						var oLink = (d[4]['nodeType'] == 'game')? d[0] : d[4];

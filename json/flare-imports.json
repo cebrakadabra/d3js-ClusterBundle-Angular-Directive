@@ -1,0 +1,39 @@
+[
+    {
+        "name": "root.top2012.id0",
+        "id": "id0",
+        "imports": [
+            "root.top2012.id5"
+        ]
+    },
+    {
+        "name": "root.contentLabels.id1",
+        "id": "id1",
+        "imports": [
+            "root.top2012.id0"
+        ]
+    },
+    {
+        "name": "root.top2014.id2",
+        "id": "id2",
+        "imports": []
+    },
+    {
+        "name": "root.contentLabels.id3",
+        "id": "id3",
+        "imports": [
+            "root.top2012.id0",
+            "root.top2014.id2"
+        ]
+    },
+    {
+        "name": "root.top2014.id4",
+        "id": "id4",
+        "imports": []
+    },
+    {
+        "name": "root.top2012.id5",
+        "id": "id5",
+        "imports": []
+    }
+]
