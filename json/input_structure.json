@@ -1,15 +1,35 @@
 {
      "groups" : [{
-               "id" : "top2012",
+               "id" : "group1",
                "label" : "Top 20 Games from 2012"
           },
           {
-               "id" : "contentLabels",
+               "id" : "group2",
                "label" : "Content Labels"
           },
           {
-               "id" : "top2014",
+               "id" : "group3",
                "label" : "Top 20 Games from 2014"
+          },
+          {
+               "id" : "group4",
+               "label" : "Group Number 4"
+          },
+          {
+               "id" : "group5",
+               "label" : "Group Number 5"
+          },
+          {
+               "id" : "group6",
+               "label" : "Group Number 6"
+          },
+          {
+               "id" : "group7",
+               "label" : "Group Number 7"
+          },
+          {
+               "id" : "group8",
+               "label" : "Group Number 8"
           }
 
      ],
@@ -17,37 +37,73 @@
           {
                "id" : "id0",
                "label" : "Game from 2012",
-               "group" : "top2012",
+               "group" : "group1",
                "tag" : ["sometag", "anothertag"]
           }, 
           {
                "id" : "id1",
                "label" : "content label 1",
-               "group" : "contentLabels",
+               "group" : "group2",
                "tags" : ["athirdtag"]
           },
           {
                "id" : "id2",
                "label" : "Game from 2014",
-               "group" : "top2014",
+               "group" : "group3",
                "tags" : ["athirdtag"]
           },
           {
                "id" : "id3",
                "label" : "content label 2",
-               "group" : "contentLabels",
+               "group" : "group2",
                "tags" : ["athirdtag"]
           },
           {
                "id" : "id4",
                "label" : "Another Game from 2014",
-               "group" : "top2014",
+               "group" : "group3",
                "tags" : ["athirdtag"]
           },
           {
                "id" : "id5",
-               "label" : "Another Game from 2012",
-               "group" : "top2012",
+               "label" : "another thing from group 4",
+               "group" : "group4",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id6",
+               "label" : "another thing from group 4",
+               "group" : "group4",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id7",
+               "label" : "another thing from group 5",
+               "group" : "group5",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id8",
+               "label" : "Thing from group 5",
+               "group" : "group5",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id9",
+               "label" : "Thing from group 6",
+               "group" : "group6",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id10",
+               "label" : "groupitem from group 7",
+               "group" : "group7",
+               "tags" : ["athirdtag"]
+          },
+          {
+               "id" : "id11",
+               "label" : "groupitem from group 8",
+               "group" : "group8",
                "tags" : ["athirdtag"]
           }
      ],
@@ -68,8 +124,33 @@
                "value" : 5.0
           },
           {
-               "from" : "id5",
+               "from" : "id11",
                "to" : "id0",
+               "value" : 5.0
+          },
+          {
+               "from" : "id10",
+               "to" : "id5",
+               "value" : 5.0
+          },
+          {
+               "from" : "id9",
+               "to" : "id6",
+               "value" : 5.0
+          },
+          {
+               "from" : "id7",
+               "to" : "id8",
+               "value" : 5.0
+          },
+          {
+               "from" : "id4",
+               "to" : "id3",
+               "value" : 5.0
+          },
+          {
+               "from" : "id0",
+               "to" : "id6",
                "value" : 5.0
           }
      ]

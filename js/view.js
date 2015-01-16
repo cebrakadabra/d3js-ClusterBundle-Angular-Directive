@@ -28,7 +28,6 @@ d3app.directive('d3clusterDirective', function($parse) {
       		links = $parse(scope.links)(scope);
 
       		var groupcolors = null;
-      		var grouptypes = ["group1", "group2", "group3", "group4", "group5", "group6", "group6", "group7", "group8"];
 
       		if(scope.groupcolorsgiven != "" && scope.groupcolorsgiven != undefined){
       			var colorgroup = $parse(scope.groupcolorsgiven)(scope);
@@ -39,7 +38,6 @@ d3app.directive('d3clusterDirective', function($parse) {
       					groupcolors = colorgroup;
       				} else{
       					alert("ATTENTION\n\nA given color seems not to be in hexcode. \n\nConvention: 6digits and hexcode only. \nDefault color is used now.")
-      					// console.log("A color seems to be not hex.");
       					groupcolors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
       				}
       			}
@@ -69,8 +67,6 @@ d3app.directive('d3clusterDirective', function($parse) {
       			}
       		}
 
-      		console.log(JSON.stringify(structure));
-
 
 
 
@@ -80,12 +76,13 @@ d3app.directive('d3clusterDirective', function($parse) {
 			    rx = w / 2,
 			    ry = h / 2,
 			    m0,
-			    rotate = 0;
+			    rotate = 0,
+			    pi = Math.PI;
 
 			var splines = [];
 
 			var cluster = d3.layout.cluster()
-			    .size([360, ry - 120])
+			    .size([360, ry - 180])
 			    .sort(function(a, b) { return d3.ascending(a.key, b.key); });
 
 			var bundle = d3.layout.bundle();
@@ -97,7 +94,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 			    .angle(function(d) { return d.x / 180 * Math.PI; });
 
 			// Chrome 15 bug: <http://code.google.com/p/chromium/issues/detail?id=98951>
-			var div = d3.select("body").insert("div", "h2")
+			var div = d3.select("#"+clusteridentifier+"").insert("div", "h2")
 			    .style("top", "-80px")
 			    .style("left", "-160px")
 			    .style("width", w + "px")
@@ -129,7 +126,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 			  var path = svg.selectAll("path.link")
 			      .data(links)
 			    .enter().append("svg:path")
-			      .attr("class", function(d) { return "link source-" + d.source.key + " target-" + d.target.key; })
+			      .attr("class", function(d) { console.log("link source-" + d.source.key + " target-" + d.target.key); return "link source-" + d.source.key + " target-" + d.target.key; })
 			      .attr("d", function(d, i) { return line(splines[i]); });
 
 			  svg.selectAll("g.node")
@@ -139,7 +136,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 			      .attr("id", function(d) { return "node-" + d.key; })
 			      .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 			    .append("svg:text")
-			      .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+			      .attr("dx", function(d) { return d.x < 180 ? 25 : -25; })
 			      .attr("dy", ".31em")
 			      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
 			      .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
@@ -151,8 +148,60 @@ d3app.directive('d3clusterDirective', function($parse) {
 			    line.tension(this.value / 100);
 			    path.attr("d", function(d, i) { return line(splines[i]); });
 			  });
-			//});  
-			//});
+
+
+			 
+
+
+			  var groupData = svg.selectAll("g.group")
+			    .data(nodes.filter(function(d) { 
+			    	if(groups.length == 1){
+			    		return (d.key==groups[0].id) && d.children;
+			    	} else if(groups.length == 2){
+			    		return (d.key==groups[0].id || d.key==groups[1].id) && d.children;
+			    	} else if(groups.length == 3){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id) && d.children;
+			    	} else if(groups.length == 4){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id) && d.children;
+			    	} else if(groups.length == 5){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id || d.key==groups[4].id) && d.children;
+			    	} else if(groups.length == 6){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id || d.key==groups[4].id || d.key==groups[5].id) && d.children;
+			    	} else if(groups.length == 7){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id || d.key==groups[4].id || d.key==groups[5].id || d.key==groups[6].id) && d.children;
+			    	} else if(groups.length == 8){
+			    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id || d.key==groups[4].id || d.key==groups[5].id || d.key==groups[6].id || d.key==groups[7].id) && d.children;
+			    	}
+
+
+			    	
+			    	 }))
+			  .enter().append("group")
+			    .attr("class", "group")
+			    .attr("id", function(d){ return d.key; });
+			    
+			  var groupArc = d3.svg.arc()
+			  .innerRadius(ry - 177)
+			  .outerRadius(ry - 157)
+			  .startAngle(function(d) { return (findStartAngle(d.__data__.children)-2) * pi / 180;})
+			  .endAngle(function(d) { return (findEndAngle(d.__data__.children)+2) * pi / 180});
+			  
+
+			  svg.selectAll("g.arc")
+			  .data(groupData[0])
+			.enter().append("svg:path")
+			  .attr("d", groupArc)
+			  .attr("class", "groupArc")
+			  .style("fill", "#db003a")
+			  .style("fill-opacity", 1.0);
+			  
+
+			  
+			  for(var i = 0; i < groups.length; i++){
+			  	$(".groupArc").eq(i).css("fill", groupcolors[i]);
+			  }
+
+
 
 			d3.select(window)
 			    .on("mousemove", mousemove)
@@ -232,9 +281,23 @@ d3app.directive('d3clusterDirective', function($parse) {
 			}
 
 
+			function findStartAngle(children) {
+			    var min = children[0].x;
+			    children.forEach(function(d) {
+			       if (d.x < min)
+			           min = d.x;
+			    });
+			    return min;
+			}
 
-
-
+			function findEndAngle(children) {
+			    var max = children[0].x;
+			    children.forEach(function(d) {
+			       if (d.x > max)
+			           max = d.x;
+			    });
+			    return max;
+			}
 
 
 

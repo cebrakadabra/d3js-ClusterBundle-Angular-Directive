@@ -105,6 +105,11 @@ path.arc {
   fill: #fff;
 }
 
+.arcText {
+  fill: #000;
+  font: 11px sans-serif;
+}
+
 .node {
   font-size: 10px;
 }
