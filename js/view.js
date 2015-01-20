@@ -2,16 +2,18 @@ d3app.directive('d3clusterDirective', function($parse) {
     return {
       restrict: 'E',
       scope: {
-	      id: '@customid',
-	      groups: '@',
-	      items: '@',
-	      links: '@',
-	      groupcolorsgiven: '@'
+	      // id: '@customid',
+	      // groups: '@',
+	      // items: '@',
+	      // links: '@',
+	      // groupColors: '@',
+	      config: '='
 	    },
       	link: function postLink(scope, element, attrs) {
 
+
 	      	var clusteridentifier = null;
-	      	if(scope.id != "" && scope.id != undefined){
+	      	if(scope.config.id != "" && scope.config.id != undefined && scope.config.id != null){
 	      		clusteridentifier = scope.id;
 	      		
 	      	} else{
@@ -23,27 +25,28 @@ d3app.directive('d3clusterDirective', function($parse) {
 	      	var groups = [];
       		var items = [];
       		var links = []; 
-      		groups = $parse(scope.groups)(scope);
-      		items = $parse(scope.items)(scope);
-      		links = $parse(scope.links)(scope);
+      		groups = scope.config.groups;
+      		items = scope.config.items;
+      		links = scope.config.links;
 
-      		var groupcolors = null;
 
-      		if(scope.groupcolorsgiven != "" && scope.groupcolorsgiven != undefined){
-      			var colorgroup = $parse(scope.groupcolorsgiven)(scope);
-      			console.log(colorgroup);
+      		var groupColors = null;
+
+      		if(scope.config.groupColors != "" && scope.config.groupColors != undefined && scope.config.groupColors != null){
+      			var colorgroup = scope.config.groupColors;
+      			
       			for(var y = 0; y < colorgroup.length; y++){
       				var isOk  = /^#[0-9A-F]{6}$/i.test(colorgroup[y]);
       				if(isOk){
-      					groupcolors = colorgroup;
+      					groupColors = colorgroup;
       				} else{
       					alert("ATTENTION\n\nA given color seems not to be in hexcode. \n\nConvention: 6digits and hexcode only. \nDefault color is used now.")
-      					groupcolors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
+      					groupColors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
       				}
       			}
       			
       		} else{
-      			groupcolors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
+      			groupColors = ["#db003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
       		}
       		
 
@@ -126,7 +129,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 			  var path = svg.selectAll("path.link")
 			      .data(links)
 			    .enter().append("svg:path")
-			      .attr("class", function(d) { console.log("link source-" + d.source.key + " target-" + d.target.key); return "link source-" + d.source.key + " target-" + d.target.key; })
+			      .attr("class", function(d) { return "link source-" + d.source.key + " target-" + d.target.key; })
 			      .attr("d", function(d, i) { return line(splines[i]); });
 
 			  svg.selectAll("g.node")
@@ -198,7 +201,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 			  
 			  for(var i = 0; i < groups.length; i++){
-			  	$(".groupArc").eq(i).css("fill", groupcolors[i]);
+			  	$(".groupArc").eq(i).css("fill", groupColors[i]);
 			  }
 
 
@@ -239,7 +242,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 			    svg
 			        .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
 			      .selectAll("g.node text")
-			        .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 8 : -8; })
+			        .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 25 : -25; })
 			        .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
 			        .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
 			  }

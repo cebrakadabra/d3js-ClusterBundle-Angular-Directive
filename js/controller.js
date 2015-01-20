@@ -6,4 +6,12 @@ d3app.controller('MainController', ['$scope', '$http', 'InputDataService', funct
 
 	$scope.groupcolors = ["#ab003a", "#002d61", "#f08c00", "#0080c4", "#64E572", "#FF9655", "#FFF263", "#6AF9C4"];
 
+	$scope.config = {
+		id: null,
+		groups: $scope.groups,
+		items: $scope.items,
+		links: $scope.links,
+		groupColors: $scope.groupcolors
+	}
+
 }]);
