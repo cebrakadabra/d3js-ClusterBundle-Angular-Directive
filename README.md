@@ -9,5 +9,3 @@ to get started use: ```<d3cluster-Directive config="config"></d3cluster-Directiv
 
 The repo contains a whole AngularJS example. You only have to start it on a (local) Webserver
 
-## Tasks todo
-- Redraw the svg visualization - it won't work with the current data structure
