@@ -71,7 +71,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 // *********************************** SCOPE.DRAWCHART FUNC *******************************************************
 
-			scope.drawChart = function(w, h, rx, ry, m0, rotate, pi){
+			scope.drawChart = function(w, h, rx, ry, m0, rotate, pi, mouseoverevent, clickevent){
 
 				var splines = [];
 
@@ -87,14 +87,9 @@ d3app.directive('d3clusterDirective', function($parse) {
 				    .radius(function(d) { return d.y; })
 				    .angle(function(d) { return d.x / 180 * Math.PI; });
 
-				// Chrome 15 bug: <http://code.google.com/p/chromium/issues/detail?id=98951>
-				var div = d3.select("#"+clusteridentifier+"").insert("div", "h2")
-				    .style("top", "-80px")
-				    .style("left", "-160px")
+				var div = d3.select("#"+clusteridentifier+"")
 				    .style("width", w + "px")
-				    .style("height", w + "px")
-				    .style("position", "absolute")
-				    .style("-webkit-backface-visibility", "hidden");
+				    .style("height", w + "px");
 
 				var svg = div.append("svg:svg")
 				    .attr("width", w)
@@ -107,12 +102,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 				    .attr("d", d3.svg.arc().outerRadius(ry - 120).innerRadius(0).startAngle(0).endAngle(2 * Math.PI))
 				    .on("mousedown", mousedown);
 
-				var inputjson = JSON.stringify(structure);
 
-				// d3.json("json/flare-imports.json", function(classes) {
-				
-					
-					// classes = structure;
 				  var nodes = cluster.nodes(packages.root(structure)),
 				      links = packages.imports(nodes),
 				      splines = bundle(links);
@@ -135,13 +125,9 @@ d3app.directive('d3clusterDirective', function($parse) {
 				      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
 				      .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
 				      .text(function(d) { return d.label; })
-				      .on("mouseover", mouseover)
+				      .on("mouseover", mouseoverevent)
+				      .on("click", clickevent)
 				      .on("mouseout", mouseout);
-
-				  d3.select("input[type=range]").on("change", function() {
-				    line.tension(this.value / 100);
-				    path.attr("d", function(d, i) { return line(splines[i]); });
-				  });
 
 
 				 
@@ -183,7 +169,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 				  svg.selectAll("g.arc")
 				  .data(groupData[0])
-				.enter().append("svg:path")
+				  .enter().append("svg:path")
 				  .attr("d", groupArc)
 				  .attr("class", "groupArc")
 				  .style("fill", "#db003a")
@@ -239,15 +225,9 @@ d3app.directive('d3clusterDirective', function($parse) {
 				  }
 				}
 
-				function mouseover(d) {
-				  svg.selectAll("path.link.target-" + d.key)
-				      .classed("target", true)
-				      .each(updateNodes("source", true));
-
-				  svg.selectAll("path.link.source-" + d.key)
-				      .classed("source", true)
-				      .each(updateNodes("target", true));
-				}
+				// function mouseover(d) {
+				  
+				// }
 
 				function mouseout(d) {
 				  svg.selectAll("path.link.source-" + d.key)
@@ -311,24 +291,20 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 			if(scope.config.width == null && scope.config.height == null && scope.config.autosize == true){
 				// w and h = null, autosize true
-				console.log("w and h = null, autosize true");
 				if($("#"+clusteridentifier+"").parent().height() == 0 || $("#"+clusteridentifier+"").parent().width() == 0){
 					if($("#"+clusteridentifier+"").parent().parent().height() == 0 || $("#"+clusteridentifier+"").parent().parent().width() == 0){
 						w = $("body").width();
 						h = $("body").height();
 						rx = w / 2;
 			    		ry = h / 2;
-			    		console.log("body?");
-						scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+						scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 
 					} else{
-						console.log("here?");
 						w = $("#"+clusteridentifier+"").parent().parent().width();
 						h = $("#"+clusteridentifier+"").parent().parent().height();
 						rx = w / 2;
 					    ry = h / 2;
-					    console.log(w, h);
-						scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+						scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 						
 					}
 
@@ -338,21 +314,19 @@ d3app.directive('d3clusterDirective', function($parse) {
 					rx = w / 2;
 				    ry = h / 2;
 
-					scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+					scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 				}
 
 
 			} else if(scope.config.width != null && scope.config.height != null && scope.config.autosize == true){
 				// w and h != null, but autosize true
-				console.log("w and h != null, but autosize true");
 				if($("#"+clusteridentifier+"").parent().height() == 0 || $("#"+clusteridentifier+"").parent().width() == 0){
 					if($("#"+clusteridentifier+"").parent().parent().height() == 0 || $("#"+clusteridentifier+"").parent().parent().width() == 0){
 						w = $("body").width();
 						h = $("body").height();
 						rx = w / 2;
 			    		ry = h / 2;
-			    		console.log("body?");
-						scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+						scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 
 					} else{
 						console.log("here?");
@@ -360,8 +334,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 						h = $("#"+clusteridentifier+"").parent().parent().height();
 						rx = w / 2;
 					    ry = h / 2;
-					    console.log(w, h);
-						scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+						scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 						
 					}
 
@@ -371,7 +344,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 					rx = w / 2;
 				    ry = h / 2;
 
-					scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+					scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 				}
 
 			} else{
@@ -381,7 +354,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 				rx = w / 2;
 			    ry = h / 2;
 
-				scope.drawChart(w, h, rx, ry, m0, rotate, pi);
+				scope.drawChart(w, h, rx, ry, m0, rotate, pi, scope.config.events.onMouseOver, scope.config.events.onClick);
 				
 			}
 			
@@ -393,7 +366,62 @@ d3app.directive('d3clusterDirective', function($parse) {
 // ********************************* DEFINED SIZE OR AUTOSIZING CONFIG END **********************************
 			
 
+// ********************************* WATCHES **********************************
 
+	scope.$watch('config', function(newconf, oldconf) {	
+		
+		var clusterid = null;
+      	if(newconf.id != "" && newconf.id != undefined && newconf.id != null){
+      		clusterid = newconf.id;
+      		
+      	} else{
+      		clusterid = "clusterid";
+      	}
+		$("#"+clusterid+" svg").remove();
+
+		structure = [];
+
+		groups = [];
+  		items = [];
+  		links = []; 
+  		groups = newconf.groups;
+  		items = newconf.items;
+  		links = newconf.links;
+      		
+
+  		for(var i = 0; i < items.length; i++){
+  			structure.push({"name": "root."+items[i].group+"."+items[i].id, "label": items[i].label, "id":items[i].id, "imports": []});
+  		}
+
+  		for(var i = 0; i < links.length; i++){
+  			for(var x = 0; x < items.length; x++){
+  				if(items[x].id == links[i].from){
+  					for(var y = 0; y < structure.length; y++){
+  						if(structure[y].id == links[i].to){
+  							structure[y].imports.push("root."+items[x].group+"."+items[x].id);
+  						}
+  					}
+  				}
+  			}
+  		}
+
+
+  		var w = newconf.width, 
+  			h = newconf.height,
+  			rx = w / 2, 
+  			ry = h / 2, 
+  			m0,
+			rotate = 0,
+			pi = Math.PI;
+
+
+		
+		scope.drawChart(w, h, rx, ry, m0, rotate, pi, newconf.events.onMouseOver, newconf.events.onClick);
+
+
+	});
+
+// ********************************* WATCHES END **********************************
 
 
 
