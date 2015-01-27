@@ -9,7 +9,25 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 // *********************************** RETRIEVING AND DEALING WITH DATA ********************************
 
-	      	var clusteridentifier = null;
+			var groups = [];
+      		var items = [];
+      		var links = []; 
+      		groups = scope.config.groups;
+      		items = scope.config.items;
+      		links = scope.config.links;
+
+      		var clusteridentifier = null;
+
+      		var structure = [];
+
+      		var groupColors = null;
+
+
+
+
+// VALIDATE if id is set
+// *************************************************************************************************** 	      	
+
 	      	if(scope.config.id != "" && scope.config.id != undefined && scope.config.id != null){
 	      		clusteridentifier = scope.id;
 	      		
@@ -19,16 +37,10 @@ d3app.directive('d3clusterDirective', function($parse) {
 	      	
 	      	element.append("<div id="+clusteridentifier+"></div>");
 
-	      	var groups = [];
-      		var items = [];
-      		var links = []; 
-      		groups = scope.config.groups;
-      		items = scope.config.items;
-      		links = scope.config.links;
+	      	
 
-
-      		var groupColors = null;
-
+// VALIDATE if colors are set
+// ***************************************************************************************************    
       		if(scope.config.groupColors != "" && scope.config.groupColors != undefined && scope.config.groupColors != null){
       			var colorgroup = scope.config.groupColors;
       			
@@ -48,9 +60,10 @@ d3app.directive('d3clusterDirective', function($parse) {
       		
 
 
-      		var structure = [];
       		
-
+      		
+// FILL structure with data
+// ***************************************************************************************************
       		for(var i = 0; i < items.length; i++){
       			structure.push({"name": "root."+items[i].group+"."+items[i].id, "label": items[i].label, "id":items[i].id, "imports": []});
       		}
@@ -69,6 +82,10 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 // *********************************** RETRIEVING AND DEALING WITH DATA END ********************************      		
 
+
+
+
+// drawChart draws the Cluster Layout with given Parameters
 // *********************************** SCOPE.DRAWCHART FUNC *******************************************************
 
 			scope.drawChart = function(w, h, rx, ry, m0, rotate, pi, mouseoverevent, clickevent){
@@ -225,10 +242,6 @@ d3app.directive('d3clusterDirective', function($parse) {
 				  }
 				}
 
-				// function mouseover(d) {
-				  
-				// }
-
 				function mouseout(d) {
 				  svg.selectAll("path.link.source-" + d.key)
 				      .classed("source", false)
@@ -366,10 +379,17 @@ d3app.directive('d3clusterDirective', function($parse) {
 // ********************************* DEFINED SIZE OR AUTOSIZING CONFIG END **********************************
 			
 
+
+
+			
+// observing changes in the config scope
 // ********************************* WATCHES **********************************
 
 	scope.$watch('config', function(newconf, oldconf) {	
 		
+
+	// VALIDATE if id is set
+	// ****************************************************************			
 		var clusterid = null;
       	if(newconf.id != "" && newconf.id != undefined && newconf.id != null){
       		clusterid = newconf.id;
@@ -389,6 +409,9 @@ d3app.directive('d3clusterDirective', function($parse) {
   		links = newconf.links;
       		
 
+
+	// FILL structure with data
+	// ****************************************************************     		
   		for(var i = 0; i < items.length; i++){
   			structure.push({"name": "root."+items[i].group+"."+items[i].id, "label": items[i].label, "id":items[i].id, "imports": []});
   		}
@@ -415,6 +438,9 @@ d3app.directive('d3clusterDirective', function($parse) {
 			pi = Math.PI;
 
 
+
+	// Redraw the Chart
+	// ************************************************************
 		
 		scope.drawChart(w, h, rx, ry, m0, rotate, pi, newconf.events.onMouseOver, newconf.events.onClick);
 
