@@ -4,7 +4,7 @@ d3app.directive('d3clusterDirective', function($parse) {
       scope: {
 	      config: '='
 	    },
-      	link: function postLink(scope, element, attrs) {
+      	link: function clusterDiagram(scope, element, attrs) {
 
 
 // *********************************** RETRIEVING AND DEALING WITH DATA ********************************
@@ -425,6 +425,6 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 
 
-      } // postLink end
+      } // clusterDiagram end
     }; // return end
 }); // directive end
