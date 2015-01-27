@@ -125,32 +125,30 @@ d3app.directive('d3clusterDirective', function($parse) {
 				      splines = bundle(links);
 
 				  var path = svg.selectAll("path.link")
-				      .data(links)
-				    .enter().append("svg:path")
-				      .attr("class", function(d) { return "link source-" + d.source.key + " target-" + d.target.key; })
-				      .attr("d", function(d, i) { return line(splines[i]); });
+						      	.data(links)
+						    .enter().append("svg:path")
+						      	.attr("class", function(d) { return "link source-" + d.source.key + " target-" + d.target.key; })
+						      	.attr("d", function(d, i) { return line(splines[i]); });
 
-				  svg.selectAll("g.node")
-				      .data(nodes.filter(function(n) { return !n.children; }))
+				svg.selectAll("g.node")
+				      	.data(nodes.filter(function(n) { return !n.children; }))
 				    .enter().append("svg:g")
-				      .attr("class", "node")
-				      .attr("id", function(d) { return "node-" + d.key; })
-				      .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+				      	.attr("class", "node")
+				      	.attr("id", function(d) { return "node-" + d.key; })
+				      	.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 				    .append("svg:text")
-				      .attr("dx", function(d) { return d.x < 180 ? 25 : -25; })
-				      .attr("dy", ".31em")
-				      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-				      .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-				      .text(function(d) { return d.label; })
-				      .on("mouseover", mouseoverevent)
-				      .on("click", clickevent)
-				      .on("mouseout", mouseout);
+				      	.attr("dx", function(d) { return d.x < 180 ? 25 : -25; })
+				      	.attr("dy", ".31em")
+				      	.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+				      	.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+				      	.text(function(d) { return d.label; })
+				      	.on("mouseover", mouseoverevent)
+				      	.on("click", clickevent)
+				      	.on("mouseout", mouseout);
 
 
 				 
-
-
-				  var groupData = svg.selectAll("g.group")
+				var groupData = svg.selectAll("g.group")
 				    .data(nodes.filter(function(d) { 
 				    	if(groups.length == 1){
 				    		return (d.key==groups[0].id) && d.children;
@@ -169,34 +167,32 @@ d3app.directive('d3clusterDirective', function($parse) {
 				    	} else if(groups.length == 8){
 				    		return (d.key==groups[0].id || d.key==groups[1].id || d.key==groups[2].id || d.key==groups[3].id || d.key==groups[4].id || d.key==groups[5].id || d.key==groups[6].id || d.key==groups[7].id) && d.children;
 				    	}
-
-
-				    	
-				    	 }))
-				  .enter().append("group")
+				    }))
+				  	.enter().append("group")
 				    .attr("class", "group")
 				    .attr("id", function(d){ return d.key; });
 				    
-				  var groupArc = d3.svg.arc()
-				  .innerRadius(ry - 177)
-				  .outerRadius(ry - 157)
-				  .startAngle(function(d) { return (findStartAngle(d.__data__.children)-2) * pi / 180;})
-				  .endAngle(function(d) { return (findEndAngle(d.__data__.children)+2) * pi / 180});
+
+
+				var groupArc = d3.svg.arc()
+				  				.innerRadius(ry - 177)
+				  				.outerRadius(ry - 157)
+				  				.startAngle(function(d) { return (findStartAngle(d.__data__.children)-2) * pi / 180;})
+				  				.endAngle(function(d) { return (findEndAngle(d.__data__.children)+2) * pi / 180});
 				  
 
-				  svg.selectAll("g.arc")
-				  .data(groupData[0])
-				  .enter().append("svg:path")
-				  .attr("d", groupArc)
-				  .attr("class", "groupArc")
-				  .style("fill", "#db003a")
-				  .style("fill-opacity", 1.0);
+				svg.selectAll("g.arc")
+					.data(groupData[0])
+					.enter().append("svg:path")
+					.attr("d", groupArc)
+					.attr("class", "groupArc")
+					.style("fill", "#db003a")
+					.style("fill-opacity", 1.0);
 				  
-
 				  
-				  for(var i = 0; i < groups.length; i++){
-				  	$(".groupArc").eq(i).css("fill", groupColors[i]);
-				  }
+				for(var i = 0; i < groups.length; i++){
+					$(".groupArc").eq(i).css("fill", groupColors[i]);
+				}
 
 
 
@@ -205,12 +201,12 @@ d3app.directive('d3clusterDirective', function($parse) {
 				    .on("mouseup", mouseup);
 
 				function mouse(e) {
-				  return [e.pageX - rx, e.pageY - ry];
+					return [e.pageX - rx, e.pageY - ry];
 				}
 
 				function mousedown() {
-				  m0 = mouse(d3.event);
-				  d3.event.preventDefault();
+					m0 = mouse(d3.event);
+					d3.event.preventDefault();
 				}
 
 				function mousemove() {
@@ -233,9 +229,8 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 				    div.style("-webkit-transform", null);
 
-				    svg
-				        .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
-				      .selectAll("g.node text")
+				    svg.attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
+				    	.selectAll("g.node text")
 				        .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 25 : -25; })
 				        .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
 				        .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
@@ -243,13 +238,13 @@ d3app.directive('d3clusterDirective', function($parse) {
 				}
 
 				function mouseout(d) {
-				  svg.selectAll("path.link.source-" + d.key)
-				      .classed("source", false)
-				      .each(updateNodes("target", false));
+				  	svg.selectAll("path.link.source-" + d.key)
+				      	.classed("source", false)
+				      	.each(updateNodes("target", false));
 
-				  svg.selectAll("path.link.target-" + d.key)
-				      .classed("target", false)
-				      .each(updateNodes("source", false));
+				  	svg.selectAll("path.link.target-" + d.key)
+				      	.classed("target", false)
+				      	.each(updateNodes("source", false));
 				}
 
 				function updateNodes(name, value) {
@@ -292,6 +287,9 @@ d3app.directive('d3clusterDirective', function($parse) {
 // **************************************** SCOPE.DRAWCHART FUNC END *************************************
 
 
+
+
+// if width and heigt is given, and autosize is false no autosize will appear
 // ********************************* DEFINED SIZE OR AUTOSIZING CONFIG **********************************
 
 			var w = null,
@@ -381,7 +379,11 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 
 
-			
+
+
+
+
+
 // observing changes in the config scope
 // ********************************* WATCHES **********************************
 
@@ -389,7 +391,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 		
 
 	// VALIDATE if id is set
-	// ****************************************************************			
+	// ********************************		
 		var clusterid = null;
       	if(newconf.id != "" && newconf.id != undefined && newconf.id != null){
       		clusterid = newconf.id;
@@ -411,7 +413,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 
 	// FILL structure with data
-	// ****************************************************************     		
+	// ***********************************     		
   		for(var i = 0; i < items.length; i++){
   			structure.push({"name": "root."+items[i].group+"."+items[i].id, "label": items[i].label, "id":items[i].id, "imports": []});
   		}
@@ -440,8 +442,7 @@ d3app.directive('d3clusterDirective', function($parse) {
 
 
 	// Redraw the Chart
-	// ************************************************************
-		
+	// ******************************
 		scope.drawChart(w, h, rx, ry, m0, rotate, pi, newconf.events.onMouseOver, newconf.events.onClick);
 
 
